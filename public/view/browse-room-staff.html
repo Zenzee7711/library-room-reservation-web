@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Booking Room</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .navbar {
+      background-color: #CCA046;
+      padding: 10px 20px;
+    }
+
+    .table-container {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      margin-bottom: 80px;
+    }
+
+    .table thead {
+      background-color: #437DD6;
+      color: white;
+    }
+
+    .table thead th,
+    .table tbody td {
+      vertical-align: middle;
+      text-align: center;
+    }
+
+    .table thead th {
+      background-color: #437DD6 !important;
+      color: white !important;
+    }
+
+    .status-btn {
+      width: 90px;
+      text-align: center;
+      display: inline-block;
+      padding: 5px;
+      border-radius: 5px;
+      font-weight: bold;
+      color: black;
+    }
+
+    .status-free {
+      background-color: #16C098;
+      border: 1px solid #00B087;
+    }
+
+    .status-disabled {
+      background-color: #FFC5C5;
+      border: 1px solid #DF0404;
+      color: #DF0404;
+    }
+
+    .status-pending {
+      background-color: #FFFF00;
+      border: 1px solid #AFAF00;
+    }
+
+    .status-reserved {
+      background-color: #FFA500;
+      border: 1px solid #FFA500;
+    }
+
+    .footer {
+      background-color: #CCA046;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem 5rem;
+      font-size: 14px;
+    }
+
+    .footer-icons {
+      display: flex;
+      gap: 20px;
+    }
+
+    .footer-icons a {
+      color: white;
+      font-size: 24px;
+      text-decoration: none;
+    }
+
+    .footer-info {
+      text-align: center;
+      flex: 1;
+    }
+
+    .footer-contact {
+      text-align: left;
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-lg">
+    <span class="navbar-brand text-white">Booking Room</span>
+    <div class="ms-auto">
+      <a class="btn btn-outline-light" href="/dashboard/staff">Home</a>
+      <a class="btn btn-outline-light text-black active" href="/browseroomStaff">Browse Room List</a>
+      <a class="btn btn-outline-light" href="/browseroomStaff/edits">Edit Rooms</a>
+      <a class="btn btn-outline-light" href="/historyStaff">History</a>
+      <a class="btn btn-outline-light" id="btnLogout">Logout</a>
+    </div>
+  </nav>
+
+  <div class="container mt-4">
+    <h5>Welcome.... <span id="username">Sammy</span></h5>
+    <div class="table-container mt-3">
+      <div class="d-flex justify-content-between align-items-center">
+        <h5><strong>Browse Room Menu</strong></h5>
+      </div>
+      <table class="table table-striped mt-3">
+        <thead>
+          <tr>
+            <th style="background-color: #437DD6; color: white;">Room Name</th>
+            <th style="background-color: #437DD6; color: white;">Capacity</th>
+            <th style="background-color: #437DD6; color: white;">Time Slots</th>
+            <th style="background-color: #437DD6; color: white;">Status</th>
+          </tr>
+        </thead>
+        <tbody id="roomTable"></tbody>
+      </table>
+      <div class="pagination-container text-end mt-3">
+        <ul class="pagination justify-content-end" id="pagination"></ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-icons">
+      <a href="https://www.facebook.com/MFULIBRARY"><i class="bi-facebook fs-2"></i></a>
+      <a href="https://www.youtube.com/@mfulibrary1395"><i class="bi-youtube fs-2"></i></a>
+      <a href="https://www.tiktok.com/@mfu.library"><i class="bi-tiktok fs-2"></i></a>
+    </div>
+    <div class="footer-info">
+      <p><u>Opening Hours</u><br />Everyday: 8:00 - 20:00</p>
+    </div>
+    <div class="footer-contact">
+      <p><u>Contact Us</u><br />tel: 0 5391 6339<br />email: ask.library@mfu.ac.th</p>
+    </div>
+  </div>
+
+  <script>
+    const username = sessionStorage.getItem("username") || "Guest";
+    document.getElementById("username").textContent = username;
+
+    const table = document.getElementById("roomTable");
+    const pagination = document.getElementById("pagination");
+    let allSlots = [];
+    const slotsPerPage = 12;
+    let currentPage = 1;
+
+    fetch('/api/rooms/availability')
+      .then(res => res.json())
+      .then(rooms => {
+        rooms.forEach(room => {
+          room.slots.forEach(slot => {
+            allSlots.push({
+              roomName: room.name,
+              capacity: room.capacity,
+              time: slot.time,
+              status: slot.status
+            });
+          });
+        });
+        renderTable();
+        renderPagination();
+      })
+      .catch(err => console.error("Error:", err));
+
+    function renderTable() {
+      table.innerHTML = '';
+      const start = (currentPage - 1) * slotsPerPage;
+      const end = start + slotsPerPage;
+      const visibleSlots = allSlots.slice(start, end);
+
+      visibleSlots.forEach(slot => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${slot.roomName}</td>
+          <td>${slot.capacity}</td>
+          <td>${slot.time}</td>
+          <td><span class='status-btn status-${slot.status.toLowerCase()}'>${slot.status}</span></td>
+        `;
+        table.appendChild(row);
+      });
+    }
+
+    function renderPagination() {
+      pagination.innerHTML = '';
+      const pageCount = Math.ceil(allSlots.length / slotsPerPage);
+
+      for (let i = 1; i <= pageCount; i++) {
+        const li = document.createElement("li");
+        li.classList.add("page-item");
+        if (i === currentPage) li.classList.add("active");
+
+        li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+        li.addEventListener("click", () => {
+          currentPage = i;
+          renderTable();
+          renderPagination();
+        });
+        pagination.appendChild(li);
+      }
+    }
+
+    document.getElementById('btnLogout').addEventListener('click', function () {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Are you sure?',
+        text: 'You are about to log out of your account.',
+        showCancelButton: true,
+        confirmButtonText: 'Log out',
+        cancelButtonText: 'Cancel',
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          fetch('/logout', { method: 'POST' })
+            .then(() => {
+              sessionStorage.clear();
+              window.location.href = '/login';
+            })
+            .catch(() => {
+              Swal.fire("Error", "Logout failed", "error");
+            });
+        }
+      });
+    });
+  </script>
+</body>
+
+</html>
