@@ -66,6 +66,9 @@ JavaScript on the client.
 One sign-in form serves all three roles. Where it sends you afterwards comes
 from the `role` stored against the account, not from anything the browser picks.
 
+The screens were drawn in Figma before they were built — the design file is
+public: **[Room reservation, web](https://www.figma.com/design/IYR2kLPBnQVvpdUNdZ7UQo/Group2-Section3)**.
+
 ## How it works
 
 A single Express process serves everything, the HTML included. There is no
