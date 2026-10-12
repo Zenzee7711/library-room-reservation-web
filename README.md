@@ -8,11 +8,25 @@ server-side.
 Built with Node.js, Express, MySQL and server-rendered HTML with vanilla
 JavaScript on the client.
 
+<p align="center">
+  <img src="docs/hero.webp" width="840"
+       alt="The reservation site open in a browser, beside the companion mobile app running on two phones">
+</p>
+
+<p align="center">
+  <sub>The web app on the left. The same booking model also exists as a Flutter
+  client, in
+  <a href="https://github.com/Zenzee7711/library-room-booking-mobile">library-room-booking-mobile</a>.</sub>
+</p>
+
 ## Contents
 
 - [Features](#features)
+- [Screenshots](#screenshots)
+- [How it works](#how-it-works)
 - [Tech stack](#tech-stack)
 - [Project structure](#project-structure)
+- [Database](#database)
 - [Getting started](#getting-started)
 - [API reference](#api-reference)
 - [Access control](#access-control)
@@ -41,6 +55,50 @@ JavaScript on the client.
 - Edit room details and replace room photos
 - Take rooms offline and back online, blocked while a room still has active bookings
 - Audit history of every decided booking across the library
+
+## Screenshots
+
+<p align="center">
+  <img src="docs/screen-login.webp" width="780"
+       alt="The sign-in page: an email and password form over a photograph of the library, with the university crest above it">
+</p>
+
+One sign-in form serves all three roles. Where it sends you afterwards comes
+from the `role` stored against the account, not from anything the browser picks.
+
+## How it works
+
+A single Express process serves everything, the HTML included. There is no
+front-end build step and no template engine: the pages are static files that
+fetch their own data from the same API.
+
+```
+browser
+  |
+  v
+Express  (src/app.js)
+  |-- express-session        restores the signed-in user from the cookie
+  |-- pages.routes.js        role check, then sends a file from public/view
+  |-- auth / rooms /         role check, then JSON in and JSON out
+  |     bookings routes
+  v
+mysql2 connection pool  (src/config/db.js)
+  |
+  v
+MySQL   library_room_reservation
+```
+
+So loading a page takes two requests. The browser asks for `/student/rooms`;
+`pages.routes.js` confirms the session belongs to a student and returns the
+HTML. That page's script then calls `/api/rooms/availability` and renders the
+grid. The HTML carries no booking data of its own, which is why one file serves
+every user and every day.
+
+Signing in creates a session rather than a token. `POST /login` compares the
+submitted password against the bcrypt hash in `users.password` and, on a match,
+stores the user id and role in the session. Every later request is identified by
+that cookie, so the user a booking is filed against is never a value the browser
+sent.
 
 ## Tech stack
 
@@ -80,6 +138,86 @@ database/
 ├── schema.sql              Tables, keys and foreign keys
 └── seed.sql                Demo rooms and time slots
 ```
+
+## Database
+
+MySQL, four tables. Only `booking` carries foreign keys: it is the junction that
+ties a person, a room and a time of day to a date.
+
+<p align="center">
+  <img src="docs/erd.svg" width="900"
+       alt="Entity relationship diagram. The booking table references users twice, once for the requester and once for the approver, plus room and time_slot">
+</p>
+
+### What each table holds
+
+| Table       | One row is                      | Worth knowing                                                                                           |
+| ----------- | ------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `users`     | an account                      | `email` is unique; `role` is `student`, `lecturer` or `staff`, and decides what the account can reach     |
+| `room`      | a bookable room                 | `room_status` is 1 for bookable, 0 for taken offline by staff; `image` holds a filename, not a path       |
+| `time_slot` | one of the fixed daily periods  | seeded with four: 08–10, 10–12, 13–15, 15–17. A slot belongs to the day, not to any particular room      |
+| `booking`   | one request for a room and slot | carries the status, the stated objective, and which lecturer decided it                                   |
+
+### How they link
+
+`room` and `time_slot` never reference one another. Every room is bookable in
+every slot, so the grid the interface draws is simply their cross product —
+`room × time_slot` — and a row in `booking` is what claims one cell of that grid
+for one date.
+
+- `booking.user_id → users.user_id` — who asked.
+- `booking.room_id → room.room_id` — which room.
+- `booking.slot_id → time_slot.slot_id` — which period of the day.
+- `booking.approver_id → users.user_id` — the lecturer who decided it, `NULL`
+  while the request is still `Waiting`. This is a second foreign key into
+  `users`, which is why the diagram draws two lines between the same pair of
+  tables.
+
+A reservation is therefore identified by `(room_id, slot_id, booking_date)`, and
+`booking_status` says whether the row actually holds that cell: it starts
+`Waiting` and a lecturer moves it to `Approved` or `Rejected`. The composite
+index `idx_booking_room_slot_date` exists for exactly that lookup, because
+almost every page performs it.
+
+Nothing is ever deleted. A room goes offline through `room_status` instead of a
+`DELETE`, so an old booking still resolves to a real room long after that room
+stops being bookable.
+
+### Working out what is free
+
+`GET /api/rooms/availability` builds the whole grid in one query — a `CROSS JOIN`
+between `room` and `time_slot`, with a correlated subquery pulling the latest
+booking for each cell on today's date:
+
+```sql
+SELECT r.room_id, r.room_name, r.room_status,
+       ts.slot_id, ts.start_time, ts.end_time,
+       (SELECT b.booking_status
+          FROM booking b
+         WHERE b.room_id = r.room_id
+           AND b.slot_id = ts.slot_id
+           AND b.booking_date = CURDATE()
+         ORDER BY b.created_time DESC
+         LIMIT 1) AS booking_status
+  FROM room r
+  CROSS JOIN time_slot ts
+ ORDER BY r.room_name, ts.slot_id;
+```
+
+Each cell is then coloured from those two values. A room with `room_status = 0`
+reads *disabled* whatever its bookings say; otherwise `Waiting` reads *pending*,
+`Approved` reads *reserved*, and anything else reads *free*.
+
+Because the grid a browser is holding may be seconds out of date, two rules are
+checked again when a request is actually submitted:
+
+1. the `(room, slot, date)` cell must not already hold a `Waiting` or `Approved`
+   booking, and
+2. the student must not already have an active booking that day — one room per
+   student per day.
+
+Both are checks rather than database constraints, which is the race noted under
+[Known limitations](#known-limitations).
 
 ## Getting started
 

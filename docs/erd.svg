@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 440" width="1040" height="440" font-family="ui-sans-serif,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" role="img" aria-label="Entity relationship diagram of the library_room_reservation database: booking references users twice, plus room and time_slot">
+<rect width="1040" height="440" fill="#ffffff"/>
+<path stroke="#7c8ca3" stroke-width="1.4" fill="none" d="M280 61 H352 V83 H382"/>
+<path stroke="#7c8ca3" stroke-width="1.4" fill="none" d="M382 83l-9 -6M382 83l-9 0M382 83l-9 6"/>
+<text fill="#64748b" font-size="10.5" font-style="italic" x="296" y="54" text-anchor="start">requests</text>
+<path stroke="#7c8ca3" stroke-width="1.4" fill="none" d="M280 67 H322 V215 H382"/>
+<path stroke="#7c8ca3" stroke-width="1.4" fill="none" d="M382 215l-9 -6M382 215l-9 0M382 215l-9 6"/>
+<text fill="#64748b" font-size="10.5" font-style="italic" x="330" y="208" text-anchor="start">decides</text>
+<path stroke="#7c8ca3" stroke-width="1.4" fill="none" d="M280 339 H352 V127 H382"/>
+<path stroke="#7c8ca3" stroke-width="1.4" fill="none" d="M382 127l-9 -6M382 127l-9 0M382 127l-9 6"/>
+<text fill="#64748b" font-size="10.5" font-style="italic" x="288" y="332" text-anchor="start">booked in</text>
+<path stroke="#7c8ca3" stroke-width="1.4" fill="none" d="M784 159 H742 V105 H682"/>
+<path stroke="#7c8ca3" stroke-width="1.4" fill="none" d="M682 105l9 -6M682 105l9 0M682 105l9 6"/>
+<text fill="#64748b" font-size="10.5" font-style="italic" x="778" y="152" text-anchor="end">held in</text>
+<rect fill="#ffffff" stroke="#c9d3e0" stroke-width="1" x="24" y="22" width="256" height="204" rx="7"/>
+<path fill="#123a6b" d="M24 29 a7 7 0 0 1 7 -7 h242 a7 7 0 0 1 7 7 v21 h-256 z"/>
+<text fill="#ffffff" font-size="13" font-weight="600" letter-spacing="0.3" x="36" y="41">users</text>
+<text fill="#b07b14" font-size="9" font-weight="700" letter-spacing="0.4" x="35" y="65">PK</text>
+<text fill="#1b2431" font-size="12" x="61" y="65">user_id</text>
+<text fill="#64748b" font-size="11" x="269" y="65" text-anchor="end">SMALLINT</text>
+<rect fill="#f5f7fa" x="25" y="72" width="254" height="22"/>
+<text fill="#b07b14" font-size="9" font-weight="700" letter-spacing="0.4" x="35" y="87">UQ</text>
+<text fill="#1b2431" font-size="12" x="61" y="87">email</text>
+<text fill="#64748b" font-size="11" x="269" y="87" text-anchor="end">VARCHAR(100)</text>
+<text fill="#1b2431" font-size="12" x="61" y="109">password</text>
+<text fill="#64748b" font-size="11" x="269" y="109" text-anchor="end">VARCHAR(255)</text>
+<rect fill="#f5f7fa" x="25" y="116" width="254" height="22"/>
+<text fill="#1b2431" font-size="12" x="61" y="131">first_name</text>
+<text fill="#64748b" font-size="11" x="269" y="131" text-anchor="end">VARCHAR(50)</text>
+<text fill="#1b2431" font-size="12" x="61" y="153">last_name</text>
+<text fill="#64748b" font-size="11" x="269" y="153" text-anchor="end">VARCHAR(50)</text>
+<rect fill="#f5f7fa" x="25" y="160" width="254" height="22"/>
+<text fill="#1b2431" font-size="12" x="61" y="175">phone_number</text>
+<text fill="#64748b" font-size="11" x="269" y="175" text-anchor="end">VARCHAR(20)</text>
+<text fill="#1b2431" font-size="12" x="61" y="197">role</text>
+<text fill="#64748b" font-size="11" x="269" y="197" text-anchor="end">ENUM</text>
+<rect fill="#f5f7fa" x="25" y="204" width="254" height="22"/>
+<text fill="#1b2431" font-size="12" x="61" y="219">created_at</text>
+<text fill="#64748b" font-size="11" x="269" y="219" text-anchor="end">TIMESTAMP</text>
+<rect fill="#ffffff" stroke="#c9d3e0" stroke-width="1" x="24" y="300" width="256" height="94" rx="7"/>
+<path fill="#123a6b" d="M24 307 a7 7 0 0 1 7 -7 h242 a7 7 0 0 1 7 7 v21 h-256 z"/>
+<text fill="#ffffff" font-size="13" font-weight="600" letter-spacing="0.3" x="36" y="319">time_slot</text>
+<text fill="#b07b14" font-size="9" font-weight="700" letter-spacing="0.4" x="35" y="343">PK</text>
+<text fill="#1b2431" font-size="12" x="61" y="343">slot_id</text>
+<text fill="#64748b" font-size="11" x="269" y="343" text-anchor="end">SMALLINT</text>
+<rect fill="#f5f7fa" x="25" y="350" width="254" height="22"/>
+<text fill="#1b2431" font-size="12" x="61" y="365">start_time</text>
+<text fill="#64748b" font-size="11" x="269" y="365" text-anchor="end">TIME</text>
+<text fill="#1b2431" font-size="12" x="61" y="387">end_time</text>
+<text fill="#64748b" font-size="11" x="269" y="387" text-anchor="end">TIME</text>
+<rect fill="#ffffff" stroke="#c9d3e0" stroke-width="1" x="382" y="22" width="300" height="226" rx="7"/>
+<path fill="#123a6b" d="M382 29 a7 7 0 0 1 7 -7 h286 a7 7 0 0 1 7 7 v21 h-300 z"/>
+<text fill="#ffffff" font-size="13" font-weight="600" letter-spacing="0.3" x="394" y="41">booking</text>
+<text fill="#b07b14" font-size="9" font-weight="700" letter-spacing="0.4" x="393" y="65">PK</text>
+<text fill="#1b2431" font-size="12" x="419" y="65">booking_id</text>
+<text fill="#64748b" font-size="11" x="671" y="65" text-anchor="end">INT</text>
+<rect fill="#f5f7fa" x="383" y="72" width="298" height="22"/>
+<text fill="#64748b" font-size="9" font-weight="700" letter-spacing="0.4" x="393" y="87">FK</text>
+<text fill="#1b2431" font-size="12" x="419" y="87">user_id</text>
+<text fill="#64748b" font-size="11" x="671" y="87" text-anchor="end">SMALLINT</text>
+<text fill="#64748b" font-size="9" font-weight="700" letter-spacing="0.4" x="393" y="109">FK</text>
+<text fill="#1b2431" font-size="12" x="419" y="109">room_id</text>
+<text fill="#64748b" font-size="11" x="671" y="109" text-anchor="end">SMALLINT</text>
+<rect fill="#f5f7fa" x="383" y="116" width="298" height="22"/>
+<text fill="#64748b" font-size="9" font-weight="700" letter-spacing="0.4" x="393" y="131">FK</text>
+<text fill="#1b2431" font-size="12" x="419" y="131">slot_id</text>
+<text fill="#64748b" font-size="11" x="671" y="131" text-anchor="end">SMALLINT</text>
+<text fill="#1b2431" font-size="12" x="419" y="153">booking_date</text>
+<text fill="#64748b" font-size="11" x="671" y="153" text-anchor="end">DATE</text>
+<rect fill="#f5f7fa" x="383" y="160" width="298" height="22"/>
+<text fill="#1b2431" font-size="12" x="419" y="175">objective</text>
+<text fill="#64748b" font-size="11" x="671" y="175" text-anchor="end">VARCHAR(100)</text>
+<text fill="#1b2431" font-size="12" x="419" y="197">booking_status</text>
+<text fill="#64748b" font-size="11" x="671" y="197" text-anchor="end">ENUM</text>
+<rect fill="#f5f7fa" x="383" y="204" width="298" height="22"/>
+<text fill="#64748b" font-size="9" font-weight="700" letter-spacing="0.4" x="393" y="219">FK</text>
+<text fill="#1b2431" font-size="12" x="419" y="219">approver_id</text>
+<text fill="#64748b" font-size="11" x="671" y="219" text-anchor="end">SMALLINT</text>
+<text fill="#1b2431" font-size="12" x="419" y="241">created_time</text>
+<text fill="#64748b" font-size="11" x="671" y="241" text-anchor="end">TIMESTAMP</text>
+<rect fill="#ffffff" stroke="#c9d3e0" stroke-width="1" x="784" y="120" width="232" height="182" rx="7"/>
+<path fill="#123a6b" d="M784 127 a7 7 0 0 1 7 -7 h218 a7 7 0 0 1 7 7 v21 h-232 z"/>
+<text fill="#ffffff" font-size="13" font-weight="600" letter-spacing="0.3" x="796" y="139">room</text>
+<text fill="#b07b14" font-size="9" font-weight="700" letter-spacing="0.4" x="795" y="163">PK</text>
+<text fill="#1b2431" font-size="12" x="821" y="163">room_id</text>
+<text fill="#64748b" font-size="11" x="1005" y="163" text-anchor="end">SMALLINT</text>
+<rect fill="#f5f7fa" x="785" y="170" width="230" height="22"/>
+<text fill="#b07b14" font-size="9" font-weight="700" letter-spacing="0.4" x="795" y="185">UQ</text>
+<text fill="#1b2431" font-size="12" x="821" y="185">room_name</text>
+<text fill="#64748b" font-size="11" x="1005" y="185" text-anchor="end">VARCHAR(50)</text>
+<text fill="#1b2431" font-size="12" x="821" y="207">room_status</text>
+<text fill="#64748b" font-size="11" x="1005" y="207" text-anchor="end">TINYINT(1)</text>
+<rect fill="#f5f7fa" x="785" y="214" width="230" height="22"/>
+<text fill="#1b2431" font-size="12" x="821" y="229">capacity</text>
+<text fill="#64748b" font-size="11" x="1005" y="229" text-anchor="end">INT</text>
+<text fill="#1b2431" font-size="12" x="821" y="251">location</text>
+<text fill="#64748b" font-size="11" x="1005" y="251" text-anchor="end">VARCHAR(100)</text>
+<rect fill="#f5f7fa" x="785" y="258" width="230" height="22"/>
+<text fill="#1b2431" font-size="12" x="821" y="273">description</text>
+<text fill="#64748b" font-size="11" x="1005" y="273" text-anchor="end">VARCHAR(265)</text>
+<text fill="#1b2431" font-size="12" x="821" y="295">image</text>
+<text fill="#64748b" font-size="11" x="1005" y="295" text-anchor="end">VARCHAR(100)</text>
+</svg>
